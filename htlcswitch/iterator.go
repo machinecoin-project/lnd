@@ -23,6 +23,10 @@ const (
 	// LitecoinHop denotes that an HTLC is to be forwarded along the
 	// Litecoin link with the specified short channel ID.
 	LitecoinHop
+
+	// MachinecoinHop denotes that an HTLC is to be forwarded along the
+	// Machinecoin link with the specified short channel ID.
+	MachinecoinHop
 )
 
 // String returns the string representation of the target NetworkHop.
@@ -32,6 +36,8 @@ func (c NetworkHop) String() string {
 		return "Bitcoin"
 	case LitecoinHop:
 		return "Litecoin"
+	case MachinecoinHop:
+		return "Machinecoin"
 	default:
 		return "Kekcoin"
 	}

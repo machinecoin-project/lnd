@@ -111,10 +111,10 @@ func lndMain() error {
 
 	var network string
 	switch {
-	case cfg.Bitcoin.TestNet3 || cfg.Litecoin.TestNet3:
+	case cfg.Bitcoin.TestNet3 || cfg.Litecoin.TestNet3 || cfg.Machinecoin.TestNet3:
 		network = "testnet"
 
-	case cfg.Bitcoin.MainNet || cfg.Litecoin.MainNet:
+	case cfg.Bitcoin.MainNet || cfg.Litecoin.MainNet || cfg.Machinecoin.MainNet:
 		network = "mainnet"
 
 	case cfg.Bitcoin.SimNet:
@@ -285,8 +285,8 @@ func lndMain() error {
 	primaryChain := registeredChains.PrimaryChain()
 	registeredChains.RegisterChain(primaryChain, activeChainControl)
 
-	// Select the configuration and furnding parameters for Bitcoin or
-	// Litecoin, depending on the primary registered chain.
+	// Select the configuration and furnding parameters for Bitcoin, Litecoin
+ // or Machinecoin, depending on the primary registered chain.
 	chainCfg := cfg.Bitcoin
 	minRemoteDelay := minBtcRemoteDelay
 	maxRemoteDelay := maxBtcRemoteDelay
@@ -294,6 +294,11 @@ func lndMain() error {
 		chainCfg = cfg.Litecoin
 		minRemoteDelay = minLtcRemoteDelay
 		maxRemoteDelay = maxLtcRemoteDelay
+ }
+	if primaryChain == machinecoinChain {
+		chainCfg = cfg.Machinecoin
+		minRemoteDelay = minMacRemoteDelay
+		maxRemoteDelay = maxMacRemoteDelay
 	}
 
 	// TODO(roasbeef): add rotation
@@ -393,6 +398,8 @@ func lndMain() error {
 			// we consider it open.
 			// TODO(halseth): Use Litecoin params in case
 			// of LTC channels.
+   // TODO(nigho): Use Machinecoin params in case
+			// of MAC channels.
 
 			// In case the user has explicitly specified
 			// a default value for the number of
@@ -426,6 +433,7 @@ func lndMain() error {
 			// for small channels, to maxRemoteDelay blocks
 			// for channels of size maxFundingAmount.
 			// TODO(halseth): Litecoin parameter for LTC.
+   // TODO(nigho): Machinecoin parameter for MAC.
 
 			// In case the user has explicitly specified
 			// a default value for the remote delay, we
@@ -552,7 +560,7 @@ func lndMain() error {
 	// continue the start up of the remainder of the daemon. This ensures
 	// that we don't accept any possibly invalid state transitions, or
 	// accept channels with spent funds.
-	if !(cfg.Bitcoin.SimNet || cfg.Litecoin.SimNet) {
+	if !(cfg.Bitcoin.SimNet || cfg.Litecoin.SimNet || cfg.Machinecoin.SimNet) {
 		_, bestHeight, err := activeChainControl.chainIO.GetBestBlock()
 		if err != nil {
 			return err
@@ -874,6 +882,9 @@ func waitForWalletPassword(
 	chainConfig := cfg.Bitcoin
 	if registeredChains.PrimaryChain() == litecoinChain {
 		chainConfig = cfg.Litecoin
+	}
+	if registeredChains.PrimaryChain() == machinecoinChain {
+		chainConfig = cfg.Machinecoin
 	}
 	pwService := walletunlocker.New(macaroonService,
 		chainConfig.ChainDir, activeNetParams.Params)

@@ -78,16 +78,20 @@ var (
 
 	defaultLtcdDir         = btcutil.AppDataDir("ltcd", false)
 	defaultLtcdRPCCertFile = filepath.Join(defaultLtcdDir, "rpc.cert")
+ 
+	defaultMacdDir         = btcutil.AppDataDir("macd", false)
+	defaultMacdRPCCertFile = filepath.Join(defaultMacdDir, "rpc.cert")
 
 	defaultBitcoindDir  = btcutil.AppDataDir("bitcoin", false)
 	defaultLitecoindDir = btcutil.AppDataDir("litecoin", false)
+ defaultMachinecoindDir = btcutil.AppDataDir("machinecoin", false)
 )
 
 type chainConfig struct {
 	Active   bool   `long:"active" description:"If the chain should be active or not."`
 	ChainDir string `long:"chaindir" description:"The directory to store the chain's data within."`
 
-	Node string `long:"node" description:"The blockchain interface to use." choice:"btcd" choice:"bitcoind" choice:"neutrino" choice:"ltcd" choice:"litecoind"`
+	Node string `long:"node" description:"The blockchain interface to use." choice:"btcd" choice:"bitcoind" choice:"neutrino" choice:"ltcd" choice:"litecoind" choice:"macd" choice:"machinecoind"`
 
 	MainNet  bool `long:"mainnet" description:"Use the main network"`
 	TestNet3 bool `long:"testnet" description:"Use the test network"`
@@ -187,6 +191,10 @@ type config struct {
 	Litecoin      *chainConfig    `group:"Litecoin" namespace:"litecoin"`
 	LtcdMode      *btcdConfig     `group:"ltcd" namespace:"ltcd"`
 	LitecoindMode *bitcoindConfig `group:"litecoind" namespace:"litecoind"`
+ 
+	Machinecoin      *chainConfig    `group:"Machinecoin" namespace:"machinecoin"`
+	MacdMode         *btcdConfig     `group:"macd" namespace:"macd"`
+	MachinecoindMode *bitcoindConfig `group:"machinecoind" namespace:"machinecoind"`
 
 	Autopilot *autoPilotConfig `group:"autopilot" namespace:"autopilot"`
 
@@ -259,6 +267,22 @@ func loadConfig() (*config, error) {
 		},
 		LitecoindMode: &bitcoindConfig{
 			Dir:     defaultLitecoindDir,
+			RPCHost: defaultRPCHost,
+		},
+		Machinecoin: &chainConfig{
+			MinHTLC:       defaultMachinecoinMinHTLCMSat,
+			BaseFee:       defaultMachinecoinBaseFeeMSat,
+			FeeRate:       defaultMachinecoinFeeRate,
+			TimeLockDelta: defaultMachinecoinTimeLockDelta,
+			Node:          "macd",
+		},
+		MacdMode: &btcdConfig{
+			Dir:     defaultMacdDir,
+			RPCHost: defaultRPCHost,
+			RPCCert: defaultMacdRPCCertFile,
+		},
+		MachinecoindMode: &bitcoindConfig{
+			Dir:     defaultMachinecoindDir,
 			RPCHost: defaultRPCHost,
 		},
 		MaxPendingChannels: defaultMaxPendingChannels,
@@ -350,8 +374,10 @@ func loadConfig() (*config, error) {
 	cfg.LogDir = cleanAndExpandPath(cfg.LogDir)
 	cfg.BtcdMode.Dir = cleanAndExpandPath(cfg.BtcdMode.Dir)
 	cfg.LtcdMode.Dir = cleanAndExpandPath(cfg.LtcdMode.Dir)
+ cfg.MacdMode.Dir = cleanAndExpandPath(cfg.MacdMode.Dir)
 	cfg.BitcoindMode.Dir = cleanAndExpandPath(cfg.BitcoindMode.Dir)
 	cfg.LitecoindMode.Dir = cleanAndExpandPath(cfg.LitecoindMode.Dir)
+ cfg.MachinecoindMode.Dir = cleanAndExpandPath(cfg.MachinecoindMode.Dir)
 
 	// Ensure that the user didn't attempt to specify negative values for
 	// any of the autopilot params.
@@ -437,16 +463,16 @@ func loadConfig() (*config, error) {
 
 	switch {
 	// At this moment, multiple active chains are not supported.
-	case cfg.Litecoin.Active && cfg.Bitcoin.Active:
-		str := "%s: Currently both Bitcoin and Litecoin cannot be " +
+	case cfg.Machinecoin.Active && cfg.Litecoin.Active && cfg.Bitcoin.Active:
+		str := "%s: Currently all three Bitcoin, Litecoin and Machinecoin cannot be " +
 			"active together"
 		return nil, fmt.Errorf(str, funcName)
 
-	// Either Bitcoin must be active, or Litecoin must be active.
+	// Either Bitcoin must be active, Litecoin must be active or Machinecoin must be active.
 	// Otherwise, we don't know which chain we're on.
-	case !cfg.Bitcoin.Active && !cfg.Litecoin.Active:
-		return nil, fmt.Errorf("%s: either bitcoin.active or "+
-			"litecoin.active must be set to 1 (true)", funcName)
+	case !cfg.Bitcoin.Active && !cfg.Litecoin.Active && !cfg.Machinecoin.Active:
+		return nil, fmt.Errorf("%s: either bitcoin.active, "+
+			"litecoin.active or machinecoin.active must be set to 1 (true)", funcName)
 
 	case cfg.Litecoin.Active:
 		if cfg.Litecoin.SimNet {
@@ -462,21 +488,57 @@ func loadConfig() (*config, error) {
 			return nil, fmt.Errorf("timelockdelta must be at least %v",
 				minTimeLockDelta)
 		}
+  
+	case cfg.Machinecoin.Active:
+		if cfg.Machinecoin.SimNet {
+			str := "%s: simnet mode for machinecoin not currently supported"
+			return nil, fmt.Errorf(str, funcName)
+		}
+		if cfg.Machinecoin.RegTest {
+			str := "%s: regnet mode for machinecoin not currently supported"
+			return nil, fmt.Errorf(str, funcName)
+		}
+
+		if cfg.Machinecoin.TimeLockDelta < minTimeLockDelta {
+			return nil, fmt.Errorf("timelockdelta must be at least %v",
+				minTimeLockDelta)
+		}
 
 		// Multiple networks can't be selected simultaneously.  Count
 		// number of network flags passed; assign active network params
 		// while we're at it.
-		numNets := 0
+		numNetsLtc := 0
 		var ltcParams litecoinNetParams
 		if cfg.Litecoin.MainNet {
-			numNets++
+			numNetsLtc++
 			ltcParams = litecoinMainNetParams
 		}
 		if cfg.Litecoin.TestNet3 {
-			numNets++
+			numNetsLtc++
 			ltcParams = litecoinTestNetParams
 		}
-		if numNets > 1 {
+		if numNetsLtc > 1 {
+			str := "%s: The mainnet, testnet, and simnet params " +
+				"can't be used together -- choose one of the " +
+				"three"
+			err := fmt.Errorf(str, funcName)
+			return nil, err
+		}
+  
+		// Multiple networks can't be selected simultaneously.  Count
+		// number of network flags passed; assign active network params
+		// while we're at it.
+		numNetsMac := 0
+		var macParams machinecoinNetParams
+		if cfg.Machinecoin.MainNet {
+			numNetsMac++
+			macParams = machinecoinMainNetParams
+		}
+		if cfg.Machinecoin.TestNet3 {
+			numNetsMac++
+			macParams = machinecoinTestNetParams
+		}
+		if numNetsMac > 1 {
 			str := "%s: The mainnet, testnet, and simnet params " +
 				"can't be used together -- choose one of the " +
 				"three"
@@ -486,9 +548,9 @@ func loadConfig() (*config, error) {
 
 		// The target network must be provided, otherwise, we won't
 		// know how to initialize the daemon.
-		if numNets == 0 {
-			str := "%s: either --litecoin.mainnet, or " +
-				"litecoin.testnet must be specified"
+		if numNetsLtc == 0 && numNetsMac == 0 {
+			str := "%s: either --litecoin.mainnet, machinecoin.mainnet or litecoin.testnet " +
+				"machinecoin.testnet must be specified"
 			err := fmt.Errorf(str, funcName)
 			return nil, err
 		}
@@ -497,42 +559,91 @@ func loadConfig() (*config, error) {
 		// throughout the codebase we required chaincfg.Params. So as a
 		// temporary hack, we'll mutate the default net params for
 		// bitcoin with the litecoin specific information.
-		applyLitecoinParams(&activeNetParams, &ltcParams)
+		if numNetsLtc == 1
+   applyLitecoinParams(&activeNetParams, &ltcParams)
+  
+		// The machinecoin chain is the current active chain. However
+		// throughout the codebase we required chaincfg.Params. So as a
+		// temporary hack, we'll mutate the default net params for
+		// bitcoin with the machinecoin specific information.
+		if numNetsMac == 1
+   applyMachinecoinParams(&activeNetParams, &macParams)
 
-		switch cfg.Litecoin.Node {
-		case "ltcd":
-			err := parseRPCParams(cfg.Litecoin, cfg.LtcdMode,
-				litecoinChain, funcName)
-			if err != nil {
-				err := fmt.Errorf("unable to load RPC "+
-					"credentials for ltcd: %v", err)
-				return nil, err
-			}
-		case "litecoind":
-			if cfg.Litecoin.SimNet {
-				return nil, fmt.Errorf("%s: litecoind does not "+
-					"support simnet", funcName)
-			}
-			err := parseRPCParams(cfg.Litecoin, cfg.LitecoindMode,
-				litecoinChain, funcName)
-			if err != nil {
-				err := fmt.Errorf("unable to load RPC "+
-					"credentials for litecoind: %v", err)
-				return nil, err
-			}
-		default:
-			str := "%s: only ltcd and litecoind mode supported for " +
-				"litecoin at this time"
-			return nil, fmt.Errorf(str, funcName)
-		}
+  if numNetsLtc == 1 {
+   switch cfg.Litecoin.Node {
+   case "ltcd":
+    err := parseRPCParams(cfg.Litecoin, cfg.LtcdMode,
+     litecoinChain, funcName)
+    if err != nil {
+     err := fmt.Errorf("unable to load RPC "+
+      "credentials for ltcd: %v", err)
+     return nil, err
+    }
+   case "litecoind":
+    if cfg.Litecoin.SimNet {
+     return nil, fmt.Errorf("%s: litecoind does not "+
+      "support simnet", funcName)
+    }
+    err := parseRPCParams(cfg.Litecoin, cfg.LitecoindMode,
+     litecoinChain, funcName)
+    if err != nil {
+     err := fmt.Errorf("unable to load RPC "+
+      "credentials for litecoind: %v", err)
+     return nil, err
+    }
+   default:
+    str := "%s: only ltcd and litecoind mode supported for " +
+     "litecoin at this time"
+    return nil, fmt.Errorf(str, funcName)
+   }
+  }
+  
+  if numNetsMac == 1 {
+   switch cfg.Machinecoin.Node {
+   case "macd":
+    err := parseRPCParams(cfg.Machinecoin, cfg.MacdMode,
+     machinecoinChain, funcName)
+    if err != nil {
+     err := fmt.Errorf("unable to load RPC "+
+      "credentials for ltcd: %v", err)
+     return nil, err
+    }
+   case "machinecoind":
+    if cfg.Machinecoin.SimNet {
+     return nil, fmt.Errorf("%s: machinecoind does not "+
+      "support simnet", funcName)
+    }
+    err := parseRPCParams(cfg.Machinecoin, cfg.MachinecoindMode,
+     machinecoinChain, funcName)
+    if err != nil {
+     err := fmt.Errorf("unable to load RPC "+
+      "credentials for machinecoind: %v", err)
+     return nil, err
+    }
+   default:
+    str := "%s: only macd and machinecoind mode supported for " +
+     "machinecoin at this time"
+    return nil, fmt.Errorf(str, funcName)
+   }
+  }
 
+  if numNetsLtc == 1 {
 		cfg.Litecoin.ChainDir = filepath.Join(cfg.DataDir,
 			defaultChainSubDirname,
 			litecoinChain.String())
-
-		// Finally we'll register the litecoin chain as our current
-		// primary chain.
-		registeredChains.RegisterPrimaryChain(litecoinChain)
+   // Finally we'll register the litecoin chain as our current
+   // primary chain.
+   registeredChains.RegisterPrimaryChain(litecoinChain)
+  }
+  
+  if numNetsMac == 1 {
+   cfg.Machinecoin.ChainDir = filepath.Join(cfg.DataDir,
+    defaultChainSubDirname,
+    machinecoinChain.String())
+    // Finally we'll register the machinecoin chain as our current
+    // primary chain.
+    registeredChains.RegisterPrimaryChain(machinecoinChain)
+  }
 
 	case cfg.Bitcoin.Active:
 		// Multiple networks can't be selected simultaneously.  Count
@@ -879,6 +990,8 @@ func parseRPCParams(cConfig *chainConfig, nodeConfig interface{}, net chainCode,
 			daemonName = "btcd"
 		case litecoinChain:
 			daemonName = "ltcd"
+  case machinecoinChain:
+			daemonName = "macd"
 		}
 
 		// If only ONE of RPCUser or RPCPass is set, we assume the
@@ -895,6 +1008,9 @@ func parseRPCParams(cConfig *chainConfig, nodeConfig interface{}, net chainCode,
 		case litecoinChain:
 			confDir = conf.Dir
 			confFile = "ltcd"
+		case machinecoinChain:
+			confDir = conf.Dir
+			confFile = "macd"
 		}
 	case *bitcoindConfig:
 		// If all of RPCUser, RPCPass, and ZMQPath are set, we assume
@@ -909,6 +1025,8 @@ func parseRPCParams(cConfig *chainConfig, nodeConfig interface{}, net chainCode,
 			daemonName = "bitcoind"
 		case litecoinChain:
 			daemonName = "litecoind"
+		case machinecoinChain:
+			daemonName = "machinecoind"
 		}
 		// If only one or two of the parameters are set, we assume the
 		// user did that unintentionally.
@@ -925,6 +1043,9 @@ func parseRPCParams(cConfig *chainConfig, nodeConfig interface{}, net chainCode,
 		case litecoinChain:
 			confDir = conf.Dir
 			confFile = "litecoin"
+		case machinecoinChain:
+			confDir = conf.Dir
+			confFile = "machinecoin"
 		}
 	}
 
@@ -950,7 +1071,7 @@ func parseRPCParams(cConfig *chainConfig, nodeConfig interface{}, net chainCode,
 				err)
 		}
 		nConf.RPCUser, nConf.RPCPass = rpcUser, rpcPass
-	case "bitcoind", "litecoind":
+	case "bitcoind", "litecoind", "machinecoind":
 		nConf := nodeConfig.(*bitcoindConfig)
 		rpcUser, rpcPass, zmqPath, err := extractBitcoindRPCParams(confFile)
 		if err != nil {

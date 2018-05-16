@@ -127,6 +127,18 @@ func TestKeyRingDerivation(t *testing.T) {
 
 			return "ltcwallet", cleanUp, keyRing, nil
 		},
+  func() (string, func(), KeyRing, error) {
+			cleanUp, wallet, err := createTestBtcWallet(
+				CoinTypeMachinecoin,
+			)
+			if err != nil {
+				t.Fatalf("unable to create wallet: %v", err)
+			}
+
+			keyRing := NewBtcWalletKeyRing(wallet, CoinTypeMachinecoin)
+
+			return "macwallet", cleanUp, keyRing, nil
+		},
 		func() (string, func(), KeyRing, error) {
 			cleanUp, wallet, err := createTestBtcWallet(
 				CoinTypeTestnet,
@@ -241,6 +253,18 @@ func TestSecretKeyRingDerivation(t *testing.T) {
 			keyRing := NewBtcWalletKeyRing(wallet, CoinTypeLitecoin)
 
 			return "ltcwallet", cleanUp, keyRing, nil
+		},
+		func() (string, func(), SecretKeyRing, error) {
+			cleanUp, wallet, err := createTestBtcWallet(
+				CoinTypeMachinecoin,
+			)
+			if err != nil {
+				t.Fatalf("unable to create wallet: %v", err)
+			}
+
+			keyRing := NewBtcWalletKeyRing(wallet, CoinTypeMachinecoin)
+
+			return "macwallet", cleanUp, keyRing, nil
 		},
 		func() (string, func(), SecretKeyRing, error) {
 			cleanUp, wallet, err := createTestBtcWallet(
