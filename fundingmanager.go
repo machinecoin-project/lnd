@@ -56,6 +56,13 @@ const (
 	minLtcRemoteDelay uint16 = 576
 	maxLtcRemoteDelay uint16 = 8064
 
+	// minMacRemoteDelay and maxMacRemoteDelay is the extremes of the
+	// Machinecoin CSV delay we will require the remote to use for its
+	// commitment transaction. The actual delay we will require will be
+	// somewhere between these values, depending on channel size.
+	minMacRemoteDelay uint16 = 576
+	maxMacRemoteDelay uint16 = 8064
+
 	// maxWaitNumBlocksFundingConf is the maximum number of blocks to wait
 	// for the funding transaction to be confirmed before forgetting about
 	// the channel. 288 blocks is ~48 hrs

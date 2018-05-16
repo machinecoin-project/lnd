@@ -189,7 +189,7 @@ func applyMachinecoinParams(params *bitcoinNetParams, machinecoinParams *machine
 // parameter configuration.
 func isTestnet(params *bitcoinNetParams) bool {
 	switch params.Params.Net {
-	case bitcoinWire.TestNet3, bitcoinWire.BitcoinNet(litecoinWire.TestNet4), bitcoinWire.BitcoinNet(machinecoinWire.TestNet4):
+	case bitcoinWire.TestNet3, bitcoinWire.BitcoinNet(machinecoinWire.TestNet4):
 		return true
 	default:
 		return false
