@@ -40,7 +40,7 @@ const (
 	// real world.
 	//
 	// TODO(roasbeef): add command line param to modify
-	maxFundingAmount = btcutil.Amount(1 << 24)
+	maxFundingAmount = btcutil.Amount(10000000000)
 
 	// minBtcRemoteDelay and maxBtcRemoteDelay is the extremes of the
 	// Bitcoin CSV delay we will require the remote to use for its

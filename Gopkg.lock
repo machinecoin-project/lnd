@@ -174,7 +174,7 @@
     "chaincfg/chainhash",
     "wire"
   ]
-  revision = "de3fcf9ff97046ed508ec84827c40e6398cc05e5"
+  revision = "c5080b87df9973ec1ecc77ad96d74a050aa5255e"
 
 [[projects]]
   name = "github.com/miekg/dns"
