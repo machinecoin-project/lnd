@@ -559,15 +559,17 @@ func loadConfig() (*config, error) {
 		// throughout the codebase we required chaincfg.Params. So as a
 		// temporary hack, we'll mutate the default net params for
 		// bitcoin with the litecoin specific information.
-		if numNetsLtc == 1
+  if numNetsLtc == 1 {
    applyLitecoinParams(&activeNetParams, &ltcParams)
+  }
   
 		// The machinecoin chain is the current active chain. However
 		// throughout the codebase we required chaincfg.Params. So as a
 		// temporary hack, we'll mutate the default net params for
 		// bitcoin with the machinecoin specific information.
-		if numNetsMac == 1
+  if numNetsMac == 1 {
    applyMachinecoinParams(&activeNetParams, &macParams)
+  }
 
   if numNetsLtc == 1 {
    switch cfg.Litecoin.Node {
