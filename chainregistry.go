@@ -684,8 +684,8 @@ var (
   
 		machinecoinMainnetGenesis: {
 			{
-				"mac.nodes.lightning.directory",
-				"soa.nodes.lightning.directory",
+				"dnsseed1.machinecoin.io",
+				"dnsseed2.machinecoin.io",
 			},
 		},
 	}
