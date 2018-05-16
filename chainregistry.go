@@ -434,7 +434,6 @@ func newChainControlFromConfig(cfg *config, chanDB *channeldb.DB,
 			btcdMode = cfg.BtcdMode
 		case cfg.Litecoin.Active:
 			btcdMode = cfg.LtcdMode
-		}
   case cfg.Machinecoin.Active:
 			btcdMode = cfg.MacdMode
 		}
