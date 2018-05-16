@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lightningnetwork/lnd/keychain"
-	"github.com/lightningnetwork/lnd/lnwallet"
+	"github.com/machinecoin-project/lnd/keychain"
+	"github.com/machinecoin-project/lnd/lnwallet"
 	"github.com/roasbeef/btcd/btcec"
 	"github.com/roasbeef/btcd/chaincfg"
 	"github.com/roasbeef/btcd/chaincfg/chainhash"

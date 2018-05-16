@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/lightningnetwork/lnd/autopilot"
-	"github.com/lightningnetwork/lnd/lnwire"
+	"github.com/machinecoin-project/lnd/autopilot"
+	"github.com/machinecoin-project/lnd/lnwire"
 	"github.com/roasbeef/btcd/btcec"
 	"github.com/roasbeef/btcd/wire"
 	"github.com/roasbeef/btcutil"

@@ -3,7 +3,7 @@ package hodl_test
 import (
 	"testing"
 
-	"github.com/lightningnetwork/lnd/htlcswitch/hodl"
+	"github.com/machinecoin-project/lnd/htlcswitch/hodl"
 )
 
 var hodlMaskTests = []struct {

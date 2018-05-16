@@ -9,9 +9,9 @@ import (
 	"sync"
 
 	"github.com/coreos/bbolt"
-	"github.com/lightningnetwork/lnd/keychain"
-	"github.com/lightningnetwork/lnd/lnwire"
-	"github.com/lightningnetwork/lnd/shachain"
+	"github.com/machinecoin-project/lnd/keychain"
+	"github.com/machinecoin-project/lnd/lnwire"
+	"github.com/machinecoin-project/lnd/shachain"
 	"github.com/roasbeef/btcd/btcec"
 	"github.com/roasbeef/btcd/chaincfg/chainhash"
 	"github.com/roasbeef/btcd/wire"

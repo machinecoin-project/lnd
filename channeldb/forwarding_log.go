@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/coreos/bbolt"
-	"github.com/lightningnetwork/lnd/lnwire"
+	"github.com/machinecoin-project/lnd/lnwire"
 )
 
 var (

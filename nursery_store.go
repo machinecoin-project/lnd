@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/coreos/bbolt"
-	"github.com/lightningnetwork/lnd/channeldb"
+	"github.com/machinecoin-project/lnd/channeldb"
 	"github.com/roasbeef/btcd/chaincfg/chainhash"
 	"github.com/roasbeef/btcd/wire"
 )

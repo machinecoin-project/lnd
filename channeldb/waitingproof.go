@@ -9,7 +9,7 @@ import (
 
 	"github.com/coreos/bbolt"
 	"github.com/go-errors/errors"
-	"github.com/lightningnetwork/lnd/lnwire"
+	"github.com/machinecoin-project/lnd/lnwire"
 )
 
 var (

@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/lightningnetwork/lnd/autopilot"
-	"github.com/lightningnetwork/lnd/lnwire"
+	"github.com/machinecoin-project/lnd/autopilot"
+	"github.com/machinecoin-project/lnd/lnwire"
 	"github.com/miekg/dns"
 	"github.com/roasbeef/btcd/btcec"
 	"github.com/roasbeef/btcutil/bech32"

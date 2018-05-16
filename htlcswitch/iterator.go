@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/lightningnetwork/lightning-onion"
-	"github.com/lightningnetwork/lnd/lnwire"
+	"github.com/machinecoin-project/lnd/lnwire"
 	"github.com/roasbeef/btcd/btcec"
 )
 

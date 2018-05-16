@@ -13,10 +13,10 @@ ENV GODEBUG netdns=cgo
 RUN go get -u github.com/golang/dep/cmd/dep
 
 # Grab and install the latest version of lnd and all related dependencies.
-RUN git clone https://github.com/lightningnetwork/lnd $GOPATH/src/github.com/lightningnetwork/lnd
+RUN git clone https://github.com/machinecoin-project/lnd $GOPATH/src/github.com/machinecoin-project/lnd
 
 # Make lnd folder default.
-WORKDIR $GOPATH/src/github.com/lightningnetwork/lnd
+WORKDIR $GOPATH/src/github.com/machinecoin-project/lnd
 
 # Install dependencies and install/build lnd.
 RUN dep ensure

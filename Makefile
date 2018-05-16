@@ -1,4 +1,4 @@
-PKG := github.com/lightningnetwork/lnd
+PKG := github.com/machinecoin-project/lnd
 ESCPKG := github.com\/lightningnetwork\/lnd
 
 DEP_PKG := github.com/golang/dep/cmd/dep

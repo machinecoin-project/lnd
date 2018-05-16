@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lightningnetwork/lnd/keychain"
+	"github.com/machinecoin-project/lnd/keychain"
 	"github.com/roasbeef/btcd/btcec"
 	"github.com/roasbeef/btcd/chaincfg/chainhash"
 	"github.com/roasbeef/btcd/txscript"

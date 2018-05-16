@@ -1,9 +1,9 @@
 package lnwallet
 
 import (
-	"github.com/lightningnetwork/lnd/chainntnfs"
-	"github.com/lightningnetwork/lnd/channeldb"
-	"github.com/lightningnetwork/lnd/keychain"
+	"github.com/machinecoin-project/lnd/chainntnfs"
+	"github.com/machinecoin-project/lnd/channeldb"
+	"github.com/machinecoin-project/lnd/keychain"
 	"github.com/roasbeef/btcd/chaincfg"
 )
 

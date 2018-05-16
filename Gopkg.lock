@@ -165,6 +165,16 @@
     "wire"
   ]
   revision = "5f654d5faab99ee2b3488fabba98e5f7a5257ee3"
+  
+[[projects]]
+  name = "github.com/macsuite/macd"
+  packages = [
+    "btcjson",
+    "chaincfg",
+    "chaincfg/chainhash",
+    "wire"
+  ]
+  revision = "f1d71dfa37bd9e0d1560775068f13aaa215178d8"
 
 [[projects]]
   name = "github.com/miekg/dns"

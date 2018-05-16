@@ -11,12 +11,12 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/go-errors/errors"
-	"github.com/lightningnetwork/lnd/chainntnfs"
-	"github.com/lightningnetwork/lnd/channeldb"
-	"github.com/lightningnetwork/lnd/contractcourt"
-	"github.com/lightningnetwork/lnd/htlcswitch/hodl"
-	"github.com/lightningnetwork/lnd/lnwallet"
-	"github.com/lightningnetwork/lnd/lnwire"
+	"github.com/machinecoin-project/lnd/chainntnfs"
+	"github.com/machinecoin-project/lnd/channeldb"
+	"github.com/machinecoin-project/lnd/contractcourt"
+	"github.com/machinecoin-project/lnd/htlcswitch/hodl"
+	"github.com/machinecoin-project/lnd/lnwallet"
+	"github.com/machinecoin-project/lnd/lnwire"
 	"github.com/roasbeef/btcd/chaincfg/chainhash"
 )
 

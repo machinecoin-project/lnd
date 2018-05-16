@@ -11,5 +11,5 @@ services.
 ## Installation and Updating
 
 ```bash
-$ go get -u github.com/lightningnetwork/lnd/torsvc
+$ go get -u github.com/machinecoin-project/lnd/torsvc
 ```
