@@ -52,7 +52,7 @@
   
 [[constraint]]
   name = "github.com/macsuite/macd"
-  revision = "f1d71dfa37bd9e0d1560775068f13aaa215178d8"
+  revision = "de3fcf9ff97046ed508ec84827c40e6398cc05e5"
 
 [[constraint]]
   name = "github.com/miekg/dns"
