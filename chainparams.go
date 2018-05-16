@@ -5,7 +5,6 @@ import (
 	litecoinCfg "github.com/ltcsuite/ltcd/chaincfg"
 	litecoinWire "github.com/ltcsuite/ltcd/wire"
 	machinecoinCfg "github.com/macsuite/macd/chaincfg"
-	machinecoinWire "github.com/macsuite/macd/wire"
 	"github.com/roasbeef/btcd/chaincfg"
 	bitcoinCfg "github.com/roasbeef/btcd/chaincfg"
 	"github.com/roasbeef/btcd/chaincfg/chainhash"
@@ -189,7 +188,7 @@ func applyMachinecoinParams(params *bitcoinNetParams, machinecoinParams *machine
 // parameter configuration.
 func isTestnet(params *bitcoinNetParams) bool {
 	switch params.Params.Net {
-	case bitcoinWire.TestNet3, bitcoinWire.BitcoinNet(machinecoinWire.TestNet4):
+	case bitcoinWire.TestNet3, bitcoinWire.BitcoinNet(litecoinWire.TestNet4):
 		return true
 	default:
 		return false
