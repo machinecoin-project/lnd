@@ -622,6 +622,8 @@ func loadConfig() (*config, error) {
       "credentials for machinecoind: %v", err)
      return nil, err
     }
+   case "neutrino":
+			 // No need to get RPC parameters.
    default:
     str := "%s: only macd and machinecoind mode supported for " +
      "machinecoin at this time"
